@@ -122,6 +122,7 @@ fun SplashScreen(
             ) {
                 Button(
                     onClick = {
+                        navHostController.popBackStack()
                         navHostController.navigate(Routes.LoginSignUpScreen)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White),

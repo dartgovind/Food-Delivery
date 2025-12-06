@@ -17,13 +17,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.fooddelivery.R
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.projectOrange
 import com.example.fooddelivery.ui.theme.projectWhite
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmptyOrdersScreen() {
+fun EmptyOrdersScreen(navHostController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -37,7 +40,13 @@ fun EmptyOrdersScreen() {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Navigate back */ }) {
+                    IconButton(onClick = {
+                        navHostController.navigate(Routes.HomeScreen) {
+                            popUpTo(Routes.HomeScreen) {
+                                inclusive = true
+                            }
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
                             contentDescription = "Back",
@@ -51,7 +60,15 @@ fun EmptyOrdersScreen() {
             )
         },
         bottomBar = {
-            StartOrderingButton()
+            StartOrderingButton(
+                onButtonClick = {
+                    navHostController.navigate(Routes.HomeScreen) {
+                        popUpTo(Routes.HomeScreen) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         Box(
@@ -67,7 +84,7 @@ fun EmptyOrdersScreen() {
             ) {
                 // Shopping cart icon
                 Image(
-                   painter = painterResource(R.drawable.ic_cart),
+                    painter = painterResource(R.drawable.ic_cart),
                     contentDescription = "No orders",
                     modifier = Modifier.size(200.dp)
                 )
@@ -100,7 +117,9 @@ fun EmptyOrdersScreen() {
 
 
 @Composable
-fun StartOrderingButton() {
+fun StartOrderingButton(
+    onButtonClick: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,7 +127,9 @@ fun StartOrderingButton() {
             .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
         Button(
-            onClick = { /* Navigate to menu/home */ },
+            onClick = {
+                onButtonClick()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
@@ -132,6 +153,6 @@ fun StartOrderingButton() {
 @Composable
 fun EmptyOrdersScreenPreview() {
     MaterialTheme {
-        EmptyOrdersScreen()
+        EmptyOrdersScreen(rememberNavController())
     }
 }

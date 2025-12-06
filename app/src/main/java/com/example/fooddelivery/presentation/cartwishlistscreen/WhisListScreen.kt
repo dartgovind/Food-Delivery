@@ -1,4 +1,6 @@
 package com.example.fooddelivery.presentation.cartwishlistscreen
+
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -26,7 +28,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.fooddelivery.R
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.projectOrange
 import com.example.fooddelivery.ui.theme.projectWhite
 
@@ -41,7 +46,7 @@ data class WishlistItem(
 
 
 @Composable
-fun WishlistScreen() {
+fun WishlistScreen(navHostController: NavHostController) {
     var wishlistItems by remember {
         mutableStateOf(
             listOf(
@@ -107,10 +112,20 @@ fun WishlistScreen() {
 
     Scaffold(
         topBar = {
-            WishlistTopBar()
+            WishlistTopBar(onBackPressed = {
+                navHostController.navigate(Routes.HomeScreen) {
+                    popUpTo(Routes.HomeScreen) {
+                        inclusive = true
+                    }
+                }
+            })
         },
         bottomBar = {
-            CompleteOrderButton()
+            CompleteOrderButton(
+                onOrderClick = {
+                    navHostController.navigate(Routes.PaymentScreen)
+                }
+            )
         }
     ) { paddingValues ->
         LazyColumn(
@@ -138,7 +153,14 @@ fun WishlistScreen() {
                             }
                         },
                         onAddClick = {
-                            // Add to cart logic
+                            Toast.makeText(
+                                navHostController.context,
+                                "Added to cart",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
+                        onItemClick = {
+                            navHostController.navigate(Routes.FoodDetailScreen)
                         }
                     )
                 }
@@ -150,7 +172,9 @@ fun WishlistScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WishlistTopBar() {
+fun WishlistTopBar(
+    onBackPressed: () -> Unit
+) {
     TopAppBar(
         title = {
             Text(
@@ -162,7 +186,7 @@ fun WishlistTopBar() {
             )
         },
         navigationIcon = {
-            IconButton(onClick = { /* Navigate back */ }) {
+            IconButton(onClick = onBackPressed) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
@@ -182,7 +206,8 @@ fun WishlistTopBar() {
 fun WishlistItemCard(
     item: WishlistItem,
     onFavoriteClick: () -> Unit,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onItemClick: () -> Unit
 ) {
     var isFavorited by remember { mutableStateOf(item.isFavorited) }
     val scale by animateFloatAsState(
@@ -197,7 +222,10 @@ fun WishlistItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp),
+            .height(150.dp)
+            .clickable {
+                onItemClick()
+            },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -246,18 +274,20 @@ fun WishlistItemCard(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text =item.price,
+                        text = item.price,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = projectOrange
                     )
 
 
-                    Row (modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
                         // Add button
                         Button(
-                            onClick = { onAddClick },
+                            onClick = { onAddClick() },
                             modifier = Modifier
                                 .width(90.dp)
                                 .height(35.dp),
@@ -290,23 +320,23 @@ fun WishlistItemCard(
 
             // Heart icon (favorite button)
 
-                Icon(
-                    imageVector = if (isFavorited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = "Favorite",
-                    tint = projectOrange,
-                    modifier = Modifier
-                        .size(45.dp)
-                        .scale(scale)
-                        .padding(top = 10.dp, end = 15.dp)
-                        //.offset(y = (-10.dp))
-                        .align(Alignment.TopEnd)
-                        .clickable {
-                            isFavorited = !isFavorited
-                            if (!isFavorited) {
-                                onFavoriteClick()
-                            }
+            Icon(
+                imageVector = if (isFavorited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                contentDescription = "Favorite",
+                tint = projectOrange,
+                modifier = Modifier
+                    .size(45.dp)
+                    .scale(scale)
+                    .padding(top = 10.dp, end = 15.dp)
+                    //.offset(y = (-10.dp))
+                    .align(Alignment.TopEnd)
+                    .clickable {
+                        isFavorited = !isFavorited
+                        if (!isFavorited) {
+                            onFavoriteClick()
                         }
-                )
+                    }
+            )
 
         }
     }
@@ -314,7 +344,9 @@ fun WishlistItemCard(
 
 
 @Composable
-fun CompleteOrderButton() {
+fun CompleteOrderButton(
+    onOrderClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -322,7 +354,7 @@ fun CompleteOrderButton() {
             .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
         Button(
-            onClick = { /* Complete order */ },
+            onClick = onOrderClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
@@ -340,7 +372,6 @@ fun CompleteOrderButton() {
         }
     }
 }
-
 
 
 // Alternative: Animated heart with pulse effect
@@ -384,6 +415,6 @@ fun AnimatedHeartIcon(
 @Composable
 fun WishlistScreenPreview() {
     MaterialTheme {
-        WishlistScreen()
+        WishlistScreen(rememberNavController())
     }
 }

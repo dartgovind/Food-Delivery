@@ -1,5 +1,6 @@
 package com.example.fooddelivery.presentation.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,23 +48,22 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.fooddelivery.R
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.projectOrange
 import com.example.fooddelivery.ui.theme.projectWhite
 
 
 data class UserProfile(
-    val name: String,
-    val email: String,
-    val phone: String,
-    val address: String,
-    val avatarUrl: Int
+    val name: String, val email: String, val phone: String, val address: String, val avatarUrl: Int
 )
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navHostController: NavHostController) {
     val userProfile = remember {
         UserProfile(
             name = "Marvis Ighedosa",
@@ -77,22 +77,25 @@ fun ProfileScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = { /* Navigate back */ }) {
+                title = { }, navigationIcon = {
+                    IconButton(onClick = {
+                        navHostController.navigate(Routes.HomeScreen) {
+                            popUpTo(Routes.HomeScreen) {
+                                inclusive = true
+                            }
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
                             contentDescription = "Back",
                             modifier = Modifier.size(28.dp)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
+                }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = projectWhite
                 )
             )
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -120,36 +123,41 @@ fun ProfileScreen() {
 
             // profile card ka niche ka  Menu Options
             MenuOptionCard(
-                title = "Orders",
-                onClick = { /* Navigate to orders */ }
-            )
+                title = "Orders", onClick = { navHostController.navigate(Routes.OrderScreen) })
 
             Spacer(modifier = Modifier.height(16.dp))
 
             MenuOptionCard(
-                title = "Pending reviews",
-                onClick = { /* Navigate to reviews */ }
-            )
+                title = "Pending reviews", onClick = {
+                    Toast.makeText(navHostController.context, "Coming soon..", Toast.LENGTH_SHORT)
+                        .show()
+                })
 
             Spacer(modifier = Modifier.height(16.dp))
 
             MenuOptionCard(
-                title = "Faq",
-                onClick = { /* Navigate to FAQ */ }
-            )
+                title = "Faq", onClick = {
+                    Toast.makeText(navHostController.context, "Coming soon..", Toast.LENGTH_SHORT)
+                        .show()
+
+                })
 
             Spacer(modifier = Modifier.height(16.dp))
 
             MenuOptionCard(
-                title = "Help",
-                onClick = { /* Navigate to help */ }
-            )
+                title = "Help", onClick = {
+                    Toast.makeText(navHostController.context, "Coming soon..", Toast.LENGTH_SHORT)
+                        .show()
+                })
 
             Spacer(modifier = Modifier.height(32.dp))
 
             // Update Button
             Button(
-                onClick = { /* Update profile */ },
+                onClick = {
+                    Toast.makeText(navHostController.context, "Profile Updated", Toast.LENGTH_SHORT)
+                        .show()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp)
@@ -208,16 +216,14 @@ fun PersonalDetailsCard(profile: UserProfile) {
                     fontSize = 16.sp,
                     textDecoration = TextDecoration.Underline,
                     color = projectOrange,
-                    modifier = Modifier.clickable { /* Edit profile */ }
-                )
+                    modifier = Modifier.clickable { /* Edit profile */ })
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             // Profile content
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top
             ) {
                 Box(
                     modifier = Modifier
@@ -251,9 +257,7 @@ fun PersonalDetailsCard(profile: UserProfile) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = profile.email,
-                        fontSize = 15.sp,
-                        color = Color.Gray
+                        text = profile.email, fontSize = 15.sp, color = Color.Gray
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -267,9 +271,7 @@ fun PersonalDetailsCard(profile: UserProfile) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = profile.phone,
-                        fontSize = 15.sp,
-                        color = Color.Gray
+                        text = profile.phone, fontSize = 15.sp, color = Color.Gray
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -295,12 +297,10 @@ fun PersonalDetailsCard(profile: UserProfile) {
 }
 
 
-
 //profile card ka niche ka card
 @Composable
 fun MenuOptionCard(
-    title: String,
-    onClick: () -> Unit
+    title: String, onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -341,6 +341,6 @@ fun MenuOptionCard(
 @Composable
 fun ProfileScreenPreview() {
     MaterialTheme {
-        ProfileScreen()
+        ProfileScreen(rememberNavController())
     }
 }

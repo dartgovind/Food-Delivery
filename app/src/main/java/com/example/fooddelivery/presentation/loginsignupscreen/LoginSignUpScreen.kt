@@ -230,6 +230,21 @@ fun LoginSignUpScreen(
         // Bottom Button
         Button(
             onClick = {
+                //navigate to home screen
+                if (selectedTab == 0) {
+                    navHostController.navigate(Routes.HomeScreen) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
+                } else {
+                    navHostController.popBackStack()
+                    navHostController.navigate(Routes.HomeScreen) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
+                }
 
             },
             modifier = Modifier

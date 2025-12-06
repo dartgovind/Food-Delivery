@@ -1,6 +1,5 @@
 package com.example.fooddelivery.presentation.cartwishlistscreen
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -8,15 +7,46 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +62,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.fooddelivery.R
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.projectOrange
 import com.example.fooddelivery.ui.theme.projectWhite
 import kotlin.math.roundToInt
@@ -46,7 +79,9 @@ data class CartItem(
 )
 
 @Composable
-fun CartScreen() {
+fun CartScreen(
+    navHostController: NavHostController
+) {
     var cartItems by remember {
         mutableStateOf(
             listOf(
@@ -60,22 +95,36 @@ fun CartScreen() {
                     2,
                     "Fishwith mix orange....",
                     "#1,900",
-                    R.drawable.ic_dummy_image                ),
+                    R.drawable.ic_dummy_image
+                ),
                 CartItem(
                     3,
                     "Veggie tomato mix",
                     "#1,900",
-                    R.drawable.ic_dummy_image                )
+                    R.drawable.ic_dummy_image
+                )
             )
         )
     }
 
     Scaffold(
         topBar = {
-            CartTopBar()
+            CartTopBar(
+                onBackPressed = {
+                    navHostController.navigate(Routes.HomeScreen) {
+                        popUpTo(Routes.HomeScreen) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         },
         bottomBar = {
-            OrderButton()
+            OrderButton(
+                onOrderClick = {
+                    navHostController.navigate(Routes.PaymentScreen)
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -100,6 +149,9 @@ fun CartScreen() {
                 ) { item ->
                     SwipeableCartItem(
                         item = item,
+                        onItemClicked = {
+                            navHostController.navigate(Routes.FoodDetailScreen)
+                        },
                         onDelete = {
                             cartItems = cartItems.filter { it.id != item.id }
                         },
@@ -118,7 +170,9 @@ fun CartScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartTopBar() {
+fun CartTopBar(
+    onBackPressed: () -> Unit
+) {
     TopAppBar(
         title = {
             Text(
@@ -130,7 +184,7 @@ fun CartTopBar() {
             )
         },
         navigationIcon = {
-            IconButton(onClick = { /* Navigate back */ }) {
+            IconButton(onClick = onBackPressed) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
@@ -147,11 +201,12 @@ fun CartTopBar() {
 @Composable
 fun SwipeableCartItem(
     item: CartItem,
+    onItemClicked: () -> Unit = {},
     onDelete: () -> Unit,
     onQuantityChange: (Int) -> Unit
 ) {
     // raw drag value
-    var dragOffset by remember { mutableStateOf(0f) }
+    var dragOffset by remember { mutableFloatStateOf(0f) }
 
     // smooth animation for swipe
     val animatedOffset by animateFloatAsState(
@@ -163,13 +218,16 @@ fun SwipeableCartItem(
         label = "cartSwipeOffset"
     )
     val density = LocalDensity.current
-    val maxSwipe =  with(density) { -160.dp.toPx() }
+    val maxSwipe = with(density) { -160.dp.toPx() }
     val swipeThreshold = maxSwipe / 2f
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(130.dp)
+            .clickable {
+                onItemClicked()
+            }
     ) {
         //background favorite and  Delete
         Row(
@@ -186,7 +244,7 @@ fun SwipeableCartItem(
                     .size(56.dp)
                     .clip(CircleShape)
                     .background(projectOrange)
-                    .clickable {  },
+                    .clickable { },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -301,7 +359,7 @@ fun SwipeableCartItem(
 
 
                     }
-                    
+
                 }
 
 
@@ -317,15 +375,17 @@ fun QuantityControl(
     onQuantityChange: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier.background(projectOrange, RoundedCornerShape(20.dp))
+        modifier = Modifier
+            .background(projectOrange, RoundedCornerShape(20.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         IconButton(
             onClick = { if (quantity > 1) onQuantityChange(quantity - 1) },
-            modifier = Modifier.size(20.dp)
-                .offset(y = (-6.dp))
+            modifier = Modifier
+                .size(20.dp)
+                .offset(y = ((-6).dp))
         ) {
             Text(
                 text = "-",
@@ -357,7 +417,9 @@ fun QuantityControl(
 }
 
 @Composable
-fun OrderButton() {
+fun OrderButton(
+    onOrderClick: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -365,7 +427,7 @@ fun OrderButton() {
             .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
         Button(
-            onClick = { /* Complete order */ },
+            onClick = onOrderClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
@@ -383,10 +445,11 @@ fun OrderButton() {
         }
     }
 }
+
 @Preview(showSystemUi = true)
 @Composable
 fun CartScreenPreview() {
     MaterialTheme {
-        CartScreen()
+        CartScreen(rememberNavController())
     }
 }

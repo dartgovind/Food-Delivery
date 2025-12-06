@@ -21,7 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.fooddelivery.R
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.SFRounded
 
 // --- Enums to hold the selection states ---
@@ -30,7 +33,7 @@ enum class DeliveryOption { DoorDelivery, PickUp }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentScreen() {
+fun PaymentScreen(navHostController: NavHostController) {
     var selectedPayment by remember { mutableStateOf(PaymentOption.Card) }
     var selectedDelivery by remember { mutableStateOf(DeliveryOption.DoorDelivery) }
 
@@ -49,7 +52,9 @@ fun PaymentScreen() {
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { /* Handle back */ },
+                            onClick = {
+                                navHostController.popBackStack()
+                            },
                             modifier = Modifier.padding(start = 16.dp)
                         ) {
                             Icon(
@@ -124,7 +129,9 @@ fun PaymentScreen() {
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
-                    onClick = { /* Handle payment */ },
+                    onClick = {
+                        navHostController.navigate(Routes.DeliveryScreen)
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFA4A0C)
                     ),
@@ -173,7 +180,10 @@ fun PaymentMethodSection(
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .background(color = Color(0xFFFFA726), shape = RoundedCornerShape(12.dp)),
+                            .background(
+                                color = Color(0xFFFFA726),
+                                shape = RoundedCornerShape(12.dp)
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -195,7 +205,10 @@ fun PaymentMethodSection(
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .background(color = Color(0xFF9C27B0), shape = RoundedCornerShape(12.dp)),
+                            .background(
+                                color = Color(0xFF9C27B0),
+                                shape = RoundedCornerShape(12.dp)
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -333,5 +346,5 @@ fun SelectionItem(
 @Preview(showBackground = true)
 @Composable
 fun PaymentScreenPreview() {
-    PaymentScreen()
+    PaymentScreen(rememberNavController())
 }

@@ -1,22 +1,51 @@
 package com.example.fooddelivery.presentation.deliveryscreen
 
+import PopUpScreen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.SFRounded
 
 data class Address(
@@ -36,11 +65,13 @@ fun DeliveryScreen(
         )
     ),
     deliveryOptions: List<String> = listOf("Door delivery", "Pick up"),
-    totalAmount: String = "23,000"
+    totalAmount: String = "23,000",
+    navHostController: NavHostController
 ) {
     val orange = Color(0xFFFF6B35)
     val textOrange = Color(0xFFFA4A0C)
-    var selectedDeliveryIndex by remember { mutableStateOf(0) }
+    var selectedDeliveryIndex by remember { mutableIntStateOf(0) }
+    var showPopup by remember { mutableStateOf(false) }
 
 
     val scrollState = rememberScrollState()
@@ -48,10 +79,19 @@ fun DeliveryScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Checkout",
-                    fontFamily = SFRounded) },
+                title = {
+                    Text(
+                        "Checkout",
+                        fontFamily = SFRounded
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back */ }, modifier = Modifier.padding(start = 10.dp)) {
+                    IconButton(
+                        onClick = {
+                            navHostController.popBackStack()
+                        },
+                        modifier = Modifier.padding(start = 10.dp)
+                    ) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -153,7 +193,9 @@ fun DeliveryScreen(
 
             // Proceed button
             Button(
-                onClick = { /* Handle payment */ },
+                onClick = {
+                    showPopup = true
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -171,6 +213,19 @@ fun DeliveryScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
         }
+        if (showPopup) {
+            PopUpScreen(
+                onDismissRequest = { showPopup = false },
+                onProceed = {
+                    showPopup = false
+                    navHostController.navigate(Routes.HomeScreen) {
+                        popUpTo(Routes.HomeScreen) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -178,7 +233,10 @@ fun DeliveryScreen(
 fun AddressCard(address: Address) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.outline), // Border wapis add kiya
+        border = BorderStroke(
+            1.dp,
+            color = MaterialTheme.colorScheme.outline
+        ), // Border wapis add kiya
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -192,7 +250,11 @@ fun AddressCard(address: Address) {
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Divider(modifier = Modifier.padding(vertical = 6.dp), thickness = 0.7.dp, color = MaterialTheme.colorScheme.outline)
+            Divider(
+                modifier = Modifier.padding(vertical = 6.dp),
+                thickness = 0.7.dp,
+                color = MaterialTheme.colorScheme.outline
+            )
 
             Text(
                 text = address.addressLine,
@@ -202,7 +264,11 @@ fun AddressCard(address: Address) {
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Divider(modifier = Modifier.padding(vertical = 6.dp), thickness = 0.7.dp, color = MaterialTheme.colorScheme.outline)
+            Divider(
+                modifier = Modifier.padding(vertical = 6.dp),
+                thickness = 0.7.dp,
+                color = MaterialTheme.colorScheme.outline
+            )
 
             Text(
                 text = address.phone,
@@ -222,7 +288,10 @@ fun DeliveryOptionCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.outline), // Border wapis add kiya
+        border = BorderStroke(
+            1.dp,
+            color = MaterialTheme.colorScheme.outline
+        ), // Border wapis add kiya
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -254,15 +323,13 @@ fun DeliveryOptionCard(
                 }
 
                 if (index != options.lastIndex) {
-                    Divider(modifier = Modifier.padding(vertical = 6.dp), thickness = 0.7.dp, color = MaterialTheme.colorScheme.outline)
+                    Divider(
+                        modifier = Modifier.padding(vertical = 6.dp),
+                        thickness = 0.7.dp,
+                        color = MaterialTheme.colorScheme.outline
+                    )
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun DeliveryScreenPreview() {
-    DeliveryScreen()
 }
