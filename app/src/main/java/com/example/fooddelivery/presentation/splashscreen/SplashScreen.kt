@@ -19,12 +19,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavHostController
 import com.example.fooddelivery.R
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.SFRounded
 
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(
+    navHostController: NavHostController
+) {
     val mainBackgroundColor = Color(0xFFFF4B3A) // Orange background
     val gradientColor = Color(0xFFFF470B) // Gradient overlay color
     BoxWithConstraints(
@@ -117,7 +121,9 @@ fun SplashScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 Button(
-                    onClick = { /* Navigate to next screen */ },
+                    onClick = {
+                        navHostController.navigate(Routes.LoginSignUpScreen)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                     shape = RoundedCornerShape(30.dp),
                     modifier = Modifier
@@ -135,12 +141,6 @@ fun SplashScreen() {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSplashScreen() {
-    SplashScreen()
 }
 
 

@@ -16,11 +16,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import com.example.fooddelivery.R
+import com.example.fooddelivery.navigation.Routes
 import com.example.fooddelivery.ui.theme.SFRounded
 
 @Composable
-fun LoginSignUpScreen() {
+fun LoginSignUpScreen(
+    navHostController: NavHostController
+) {
     var selectedTab by remember { mutableStateOf(0) } // 0 = Login, 1 = Sign-up
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -114,10 +118,17 @@ fun LoginSignUpScreen() {
         Spacer(modifier = Modifier.height(32.dp))
 
         // Form fields
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp)) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp)) {
             if (selectedTab == 1) {
                 // Sign-up: Name field
-                Text(text = "Name", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(bottom = 4.dp))
+                Text(
+                    text = "Name",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
                 TextField(
                     value = name,
                     onValueChange = { name = it },
@@ -135,7 +146,12 @@ fun LoginSignUpScreen() {
             }
 
             // Email field (Login & Sign-up)
-            Text(text = "Email address", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(bottom = 4.dp))
+            Text(
+                text = "Email address",
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -153,7 +169,12 @@ fun LoginSignUpScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Password field
-            Text(text = "Password", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(bottom = 4.dp))
+            Text(
+                text = "Password",
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
             TextField(
                 value = password,
                 onValueChange = { password = it },
@@ -173,7 +194,12 @@ fun LoginSignUpScreen() {
 
             if (selectedTab == 1) {
                 // Confirm password for Sign-up
-                Text(text = "Confirm Password", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(bottom = 4.dp))
+                Text(
+                    text = "Confirm Password",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
                 TextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
@@ -203,7 +229,9 @@ fun LoginSignUpScreen() {
 
         // Bottom Button
         Button(
-            onClick = {},
+            onClick = {
+
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
@@ -221,10 +249,4 @@ fun LoginSignUpScreen() {
 
         Spacer(modifier = Modifier.height(24.dp)) // bottom nav padding
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewLoginSignUpScreen() {
-    LoginSignUpScreen()
 }

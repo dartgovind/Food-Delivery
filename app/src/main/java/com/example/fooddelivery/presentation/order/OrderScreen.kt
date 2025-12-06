@@ -1,4 +1,4 @@
-package com.example.fooddelivery.Presentation.Order
+package com.example.fooddelivery.presentation.order
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

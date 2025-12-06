@@ -1,4 +1,4 @@
-package com.example.fooddelivery.Presentation.Cart_WishList_Screen
+package com.example.fooddelivery.presentation.cartwishlistscreen
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -125,7 +126,7 @@ fun CartTopBar() {
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = TextAlign.Center
             )
         },
         navigationIcon = {
@@ -316,8 +317,7 @@ fun QuantityControl(
     onQuantityChange: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .background(projectOrange, RoundedCornerShape(20.dp))
+        modifier = Modifier.background(projectOrange, RoundedCornerShape(20.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
